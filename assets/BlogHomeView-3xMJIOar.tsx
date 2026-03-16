@@ -71,16 +71,16 @@ export function BlogHomeView({ posts, isLoading = false, currentPage = 1 }: Blog
         <section className="blog-list-pagination" aria-label="Blog pagination">
           <div className="blog-list-pagination__summary">
             <span>Page</span>
-            <strong>{`${pagination.currentPage} / ${pagination.pageCount}`}</strong>
+            <p>{`${pagination.currentPage} / ${pagination.pageCount}`}</p>
           </div>
           <nav className="blog-list-pagination__nav">
             {pagination.currentPage > 1 ? (
               <a href={getBlogPagePath(pagination.currentPage - 1)} className="blog-list-pagination__link">
-                Previous
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
               </a>
             ) : (
               <span className="blog-list-pagination__link blog-list-pagination__link--disabled" aria-disabled="true">
-                Previous
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
               </span>
             )}
 
@@ -106,11 +106,11 @@ export function BlogHomeView({ posts, isLoading = false, currentPage = 1 }: Blog
 
             {pagination.currentPage < pagination.pageCount ? (
               <a href={getBlogPagePath(pagination.currentPage + 1)} className="blog-list-pagination__link">
-                Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
               </a>
             ) : (
               <span className="blog-list-pagination__link blog-list-pagination__link--disabled" aria-disabled="true">
-                Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
               </span>
             )}
           </nav>

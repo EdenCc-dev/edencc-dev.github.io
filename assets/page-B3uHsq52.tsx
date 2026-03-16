@@ -8,6 +8,8 @@ import { getBlogSiteLinks, toAbsoluteUrl } from "@/blog/site";
 import type { BlogPost } from "@/blog/types";
 import "@/blog/static/blog.css";
 
+const BLOG_HEADING_SCROLL_OFFSET = 160;
+
 function scrollToHashTarget(hash: string, behavior: ScrollBehavior = "smooth") {
   const normalizedHash = hash.replace(/^#/, "").trim();
   if (!normalizedHash) {
@@ -26,6 +28,30 @@ function scrollToHashTarget(hash: string, behavior: ScrollBehavior = "smooth") {
   return true;
 }
 
+function getActiveHeadingId(post: BlogPost | null, offset = BLOG_HEADING_SCROLL_OFFSET) {
+  if (!post?.headings.length) {
+    return undefined;
+  }
+
+  let nextActiveHeadingId = post.headings[0]?.id;
+
+  for (const heading of post.headings) {
+    const target = document.getElementById(heading.id);
+    if (!(target instanceof HTMLElement)) {
+      continue;
+    }
+
+    if (target.getBoundingClientRect().top - offset <= 0) {
+      nextActiveHeadingId = heading.id;
+      continue;
+    }
+
+    break;
+  }
+
+  return nextActiveHeadingId;
+}
+
 export default function BlogDetailPage() {
   const { slug = "" } = useParams();
   const location = useLocation();
@@ -34,6 +60,7 @@ export default function BlogDetailPage() {
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [previousPost, setPreviousPost] = useState<BlogPost | undefined>();
   const [nextPost, setNextPost] = useState<BlogPost | undefined>();
+  const [activeHeadingId, setActiveHeadingId] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
   const postSlug = post?.meta.slug;
   const fromPage = parseOptionalBlogPageParam(new URLSearchParams(location.search).get("fromPage"));
@@ -53,6 +80,7 @@ export default function BlogDetailPage() {
         }
 
         setPost(currentPost || null);
+        setActiveHeadingId(currentPost?.headings[0]?.id);
         setRelatedPosts(nextRelatedPosts);
         setPreviousPost(adjacent.previousPost);
         setNextPost(adjacent.nextPost);
@@ -90,8 +118,50 @@ export default function BlogDetailPage() {
     };
   }, [postSlug]);
 
+  useEffect(() => {
+    if (!post?.headings.length) {
+      setActiveHeadingId(undefined);
+      return;
+    }
+
+    let frameId = 0;
+
+    const syncActiveHeading = () => {
+      frameId = 0;
+      const nextHeadingId = getActiveHeadingId(post);
+      setActiveHeadingId((currentHeadingId) => {
+        return currentHeadingId === nextHeadingId ? currentHeadingId : nextHeadingId;
+      });
+    };
+
+    const queueSyncActiveHeading = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(syncActiveHeading);
+    };
+
+    queueSyncActiveHeading();
+    window.addEventListener("scroll", queueSyncActiveHeading, { passive: true });
+    window.addEventListener("resize", queueSyncActiveHeading);
+    window.addEventListener("hashchange", queueSyncActiveHeading);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", queueSyncActiveHeading);
+      window.removeEventListener("resize", queueSyncActiveHeading);
+      window.removeEventListener("hashchange", queueSyncActiveHeading);
+    };
+  }, [post]);
+
   const handleTocNavigate = (headingId: string) => {
     const nextHash = `#${headingId}`;
+    setActiveHeadingId(headingId);
+
     if (window.location.hash !== nextHash) {
       window.history.replaceState(null, "", nextHash);
     }
@@ -153,6 +223,7 @@ export default function BlogDetailPage() {
           previousPost={previousPost}
           nextPost={nextPost}
           fromPage={fromPage}
+          activeHeadingId={activeHeadingId}
           onTocNavigate={handleTocNavigate}
         />
       </div>

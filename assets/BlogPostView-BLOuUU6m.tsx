@@ -11,6 +11,7 @@ interface BlogPostViewProps {
   previousPost?: BlogPost;
   nextPost?: BlogPost;
   fromPage?: number;
+  activeHeadingId?: string;
   onTocNavigate?: (headingId: string) => void;
 }
 
@@ -20,6 +21,7 @@ export function BlogPostView({
   previousPost,
   nextPost,
   fromPage,
+  activeHeadingId,
   onTocNavigate,
 }: BlogPostViewProps) {
   const blogPagePath = getBlogPagePath(fromPage ?? 1);
@@ -62,14 +64,15 @@ export function BlogPostView({
       <section className="blog-post-layout">
         <aside className="blog-post-toc">
           <div className="blog-post-toc__card">
-            <span className="blog-post-toc__title">On this page</span>
+            {/* <span className="blog-post-toc__title">On this page</span> */}
             {post.headings.length ? (
-              <nav>
+              <nav style={{marginTop: 0}}>
                 {post.headings.map((heading) => (
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
-                    className={`depth-${heading.depth}`}
+                    className={`depth-${heading.depth}${activeHeadingId === heading.id ? " is-active" : ""}`}
+                    aria-current={activeHeadingId === heading.id ? "location" : undefined}
                     onClick={(event) => {
                       if (!onTocNavigate) {
                         return;
