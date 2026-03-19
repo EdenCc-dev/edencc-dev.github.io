@@ -21,8 +21,7 @@ export function BlogHomeView({ posts, isLoading = false, currentPage = 1 }: Blog
       <BlogBreadcrumbs items={[{ label: "Home", href: "/" }, { label: "Blog", current: true }]} />
 
       <section className="blog-home-hero">
-        <span className="blog-home-hero__eyebrow">Cysic Blog</span>
-        <h1>Insights from the frontier of ZK compute.</h1>
+        <h1>Insights from <br/> the frontier of ZK compute.</h1>
         <p>
           Technical deep dives, ecosystem updates, product launches, and research notes from the Cysic team.
         </p>
@@ -69,10 +68,10 @@ export function BlogHomeView({ posts, isLoading = false, currentPage = 1 }: Blog
 
       {!isLoading && pagination.pageCount > 1 ? (
         <section className="blog-list-pagination" aria-label="Blog pagination">
-          <div className="blog-list-pagination__summary">
+          {/* <div className="blog-list-pagination__summary">
             <span>Page</span>
             <p>{`${pagination.currentPage} / ${pagination.pageCount}`}</p>
-          </div>
+          </div> */}
           <nav className="blog-list-pagination__nav">
             {pagination.currentPage > 1 ? (
               <a href={getBlogPagePath(pagination.currentPage - 1)} className="blog-list-pagination__link">
