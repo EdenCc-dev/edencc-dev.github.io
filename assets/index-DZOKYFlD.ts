@@ -184,3 +184,5 @@ export * from './evm'
 export * from './abi/faucet'
 export * from './abi/purchase'
 export * from './abi/bridge'
+
+export const useLocalBlog = true;
